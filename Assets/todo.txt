@@ -1,0 +1,24 @@
+2nd Level:
+Air + Earth = Sand (or Dust)
+Air + Fire = Radiation (no, not radio-activity)
+Air + Water = Mist
+Earth + Fire = Glass
+Earth + Water = Mud
+Fire + Water = Steam
+
+3th Level:
+Air + 2x Earth = Stone
+Fire + 2x Earth = Metal
+Water + 2x Earth = Wood
+
+Earth + 2x Air = Sound
+Fire + 2x Air = Plasma
+Water + 2x Air = Lightning (or Storm)
+
+Air + 2x Water = Ice
+Earth + 2x Water = Life
+Fire + 2x Water = Poison
+
+Air + 2x Fire = Death
+Earth + 2x Fire = Lava
+Water + 2x Fire = Pressure
