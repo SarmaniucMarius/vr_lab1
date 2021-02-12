@@ -5,18 +5,22 @@ using UnityEngine;
 
 public enum ElementType
 {
-    NO_TYPE,
     FIRE,
     EARTH,
     WATER,
     AIR,
-
-    SOMETHING_ELSE,
+    WIND
 }
 
 public class Game : MonoBehaviour
 {
-    string[] elements = { "earth", "fire", "water", "air" };
+    // {ELEM1, ELEM2, RESULT}
+    public ElementType[,] combinations = {
+        { ElementType.AIR, ElementType.AIR, ElementType.WIND}
+    };
+
+
+    ElementType[] elements = { ElementType.FIRE, ElementType.WATER, ElementType.EARTH, ElementType.AIR };
     int step = 2;
     // left shelf:  (-4, 1.5, -11)
     // right shelf: ( 4, 1.5, -11)
@@ -29,13 +33,16 @@ public class Game : MonoBehaviour
     private void Awake()
     {
         current = this;
-
         for (int i = 0; i < elements.Length; i++)
         {
-            GameObject a = Instantiate(newElementPrefab);
-            a.transform.Translate(new Vector3(-4f, 1.5f, -11f + i * step));
-            a.name = elements[i];
-            a.GetComponent<Element>().name = a.name;
+            GameObject left = Instantiate(newElementPrefab);
+            left.transform.Translate(new Vector3(-4f, 1.5f, -11f + i * step));
+            left.GetComponent<Element>().type = elements[i];
+
+            GameObject right = Instantiate(newElementPrefab);
+            right.transform.Translate(new Vector3(4f, 1.5f, -11f + i * step));
+            right.GetComponent<Element>().type = elements[i];
+            Debug.Log(elements[i].ToString());
         }
     }
 
@@ -43,21 +50,22 @@ public class Game : MonoBehaviour
     private Element previousSelectedElement = null;
     public void SelectElement(Element newSelectedElement)
     {
-        if(previousSelectedElement != null && previousSelectedElement != newSelectedElement)
-        {
-            // newElement = Instantiate(newElementPrefab, thirdElementPos);
+        Debug.Log("Select Element: " + newSelectedElement.type.ToString());
+        //if(previousSelectedElement != null && previousSelectedElement != newSelectedElement)
+        //{
+        //    // newElement = Instantiate(newElementPrefab, thirdElementPos);
 
-            newSelectedElement.isSelected = false;
-            previousSelectedElement.isSelected = false;
-            previousSelectedElement = null;
-        }
-        else
-        {
-            if (newElement)
-                Destroy(newElement);
+        //    newSelectedElement.isSelected = false;
+        //    previousSelectedElement.isSelected = false;
+        //    previousSelectedElement = null;
+        //}
+        //else
+        //{
+        //    if (newElement)
+        //        Destroy(newElement);
 
-            previousSelectedElement = newSelectedElement;
-            newSelectedElement.isSelected = true;
-        }
+        //    previousSelectedElement = newSelectedElement;
+        //    newSelectedElement.isSelected = true;
+        //}
     }
 }

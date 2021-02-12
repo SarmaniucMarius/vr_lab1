@@ -4,58 +4,34 @@ using UnityEngine;
 
 public class Element : MonoBehaviour
 {
-    public string name;
     public ElementType type;
-    
+    private Coroutine coroutine;
+
     [HideInInspector]
-    public bool isSelected = false;
+    public bool selected = false;
+    private bool focused = false;
 
-#if false
-    private Vector3 initial_pos;
-    private void Awake()
-    {
-        initial_pos = transform.position;
-    }
-
-    private void Update()
-    {
-        if(Input.GetButtonDown("Fire1"))
-        {
-            if(isSelectable)
-            {
-                Game.current.SelectElement(this);
-            }
-        }
-
-        if(isSelected)
-        {
-            transform.Translate(transform.up * Mathf.Sin(Time.time * 5) * Time.deltaTime);
-        }
-        else
-        {
-            transform.position = initial_pos;
-        }
-    }
-#endif
-    private bool isFocused = false;
     public void OnPointerEnter()
     {
-        isFocused = true;
+        Debug.Log("Pointer enter: " + type.ToString());
+        focused = true;
+        if (!selected)
+        {
+            coroutine = StartCoroutine(SelectCoroutine());
+        }
     }
 
     public void OnPointerExit()
     {
-        isFocused = false;
+        Debug.Log("Pointer exit: " + type.ToString());
+        focused = false;
+        StopCoroutine(coroutine);
     }
 
-    private bool isSelectable = false;
-    private void OnTriggerEnter(Collider other)
+    private IEnumerator SelectCoroutine()
     {
-        isSelectable = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        isSelectable = false;
+        yield return new WaitForSeconds(2f);
+        selected = true;
+        Game.current.SelectElement(this);
     }
 }
