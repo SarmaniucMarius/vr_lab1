@@ -77,14 +77,32 @@ public class Game : MonoBehaviour
     private Element leftElement = null;
     private Element rightElement = null;
 
+    private GameObject leftSelector;
+    private GameObject rightSelector;
+
     private void Awake()
     {
+        GameObject selector = Resources.Load("selector") as GameObject;
+
+        leftSelector = Instantiate(selector);
+        InitSelector(leftSelector);
+
+        rightSelector = Instantiate(selector);
+        InitSelector(rightSelector);
+
         defaultResource = Resources.Load("default") as GameObject;
         current = this;
         createElement(ElementType.FIRE);
         createElement(ElementType.WATER);
         createElement(ElementType.EARTH);
         createElement(ElementType.AIR);
+    }
+
+    private void InitSelector(GameObject selector)
+    {
+        selector.SetActive(false);
+        selector.transform.localScale = new Vector3(2, 2, 2);
+        selector.transform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
     private void createElement(ElementType type)
@@ -136,7 +154,7 @@ public class Game : MonoBehaviour
             {
                 UnselectLeft();
                 leftElement = newSelectedElement;
-                MarkAsSelected(leftElement);
+                MarkAsSelected(leftElement, leftSelector);
             }
         }
 
@@ -150,7 +168,7 @@ public class Game : MonoBehaviour
             {
                 UnselectRight();
                 rightElement = newSelectedElement;
-                MarkAsSelected(rightElement);
+                MarkAsSelected(rightElement, rightSelector);
             }
         }
 
@@ -165,7 +183,7 @@ public class Game : MonoBehaviour
     {
         if (leftElement != null)
         {
-            MarkAsUnselected(leftElement);
+            MarkAsUnselected(leftElement, leftSelector);
             leftElement = null;
         }
     }
@@ -174,19 +192,21 @@ public class Game : MonoBehaviour
     {
         if (rightElement != null)
         {
-            MarkAsUnselected(rightElement);
+            MarkAsUnselected(rightElement, rightSelector);
             rightElement = null;
         }
     }
 
-    private void MarkAsSelected(Element element)
+    private void MarkAsSelected(Element element, GameObject selector)
     {
-        element.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+        selector.SetActive(true);
+        selector.transform.position = element.gameObject.transform.position;
     }
 
-    private void MarkAsUnselected(Element element)
+    private void MarkAsUnselected(Element element, GameObject selector)
     {
-        element.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+        selector.SetActive(false);
+        selector.transform.position = element.gameObject.transform.position;
     }
 
     private void tryCombination()
