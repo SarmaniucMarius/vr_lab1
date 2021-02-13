@@ -101,8 +101,6 @@ public class Game : MonoBehaviour
     private void InitSelector(GameObject selector)
     {
         selector.SetActive(false);
-        selector.transform.localScale = new Vector3(2, 2, 2);
-        selector.transform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
     private void createElement(ElementType type)
@@ -121,11 +119,35 @@ public class Game : MonoBehaviour
     private GameObject CreateSidedElement(GameObject prefab, ElementType type, Side side, int offset)
     {
         GameObject obj = Instantiate(prefab);
+        CreateTextMesh(obj, type, side, offset);
+
         obj.transform.Translate(new Vector3(GetXBySide(side), 1.65f, -11f + offset * step));
         Element element = obj.GetComponent<Element>();
         element.type = type;
         element.side = side;
         return obj;
+    }
+
+    private void CreateTextMesh(GameObject parent, ElementType type, Side side, int offset)
+    {
+        GameObject textObj = new GameObject();
+        textObj.transform.parent = parent.transform;
+        textObj.transform.Translate(new Vector3(0, 1f + (offset % 2) * 0.5f, 0));
+        TextMesh text = textObj.AddComponent<TextMesh>() as TextMesh;
+        text.fontSize = 80;
+        text.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        text.text = type.ToString();
+        text.anchor = TextAnchor.LowerCenter;
+
+        switch (side)
+        {
+            case Side.LEFT:
+                textObj.transform.Rotate(0, 90, 0);
+                break;
+            case Side.RIGHT:
+                textObj.transform.Rotate(0, -90, 0);
+                break;
+        }
     }
 
     private float GetXBySide(Side side)
@@ -199,14 +221,14 @@ public class Game : MonoBehaviour
 
     private void MarkAsSelected(Element element, GameObject selector)
     {
-        selector.SetActive(true);
         selector.transform.position = element.gameObject.transform.position;
+        selector.transform.Translate(new Vector3(0, 0.9f, 0));
+        selector.SetActive(true);
     }
 
     private void MarkAsUnselected(Element element, GameObject selector)
     {
         selector.SetActive(false);
-        selector.transform.position = element.gameObject.transform.position;
     }
 
     private void tryCombination()
