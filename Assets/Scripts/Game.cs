@@ -9,7 +9,18 @@ public enum ElementType
     EARTH,
     WATER,
     AIR,
-    WIND
+    WIND,
+    ALCOHOL,
+    LAVA,
+    MOLOTOV_COCKTAIL,
+    ENERGY,
+    STORM,
+    SWAMP,
+    TYPHOON,
+    STEAM,
+    GEYSER,
+    DUST,
+    GUNPOWDER
 }
 
 public enum Side
@@ -39,14 +50,24 @@ public class Combination
 
 public class Game : MonoBehaviour
 {
-    public GameObject newElementPrefab;
-
     public static Game current;
 
     private Combination[] combinations = {
-        new Combination(ElementType.AIR, ElementType.AIR, ElementType.WIND)
+        new Combination(ElementType.AIR, ElementType.AIR, ElementType.WIND),
+        new Combination(ElementType.FIRE, ElementType.WATER, ElementType.ALCOHOL),
+        new Combination(ElementType.FIRE, ElementType.EARTH, ElementType.LAVA),
+        new Combination(ElementType.FIRE, ElementType.ALCOHOL, ElementType.MOLOTOV_COCKTAIL),
+        new Combination(ElementType.FIRE, ElementType.AIR, ElementType.ENERGY),
+        new Combination(ElementType.ENERGY, ElementType.AIR, ElementType.STORM),
+        new Combination(ElementType.EARTH, ElementType.WATER, ElementType.SWAMP),
+        new Combination(ElementType.STORM, ElementType.WATER, ElementType.TYPHOON), //8
+        new Combination(ElementType.AIR, ElementType.WATER, ElementType.STEAM),
+        new Combination(ElementType.STEAM, ElementType.EARTH, ElementType.GEYSER),
+        new Combination(ElementType.AIR, ElementType.EARTH, ElementType.DUST),
+        new Combination(ElementType.DUST, ElementType.FIRE, ElementType.GUNPOWDER),
     };
 
+    private GameObject defaultResource;
     private List<ElementType> elements = new List<ElementType>();
     private int step = 2;
 
@@ -58,6 +79,7 @@ public class Game : MonoBehaviour
 
     private void Awake()
     {
+        defaultResource = Resources.Load("default") as GameObject;
         current = this;
         createElement(ElementType.FIRE);
         createElement(ElementType.WATER);
@@ -67,15 +89,21 @@ public class Game : MonoBehaviour
 
     private void createElement(ElementType type)
     {
+        GameObject prefab = Resources.Load(type.ToString()) as GameObject;
+        if (prefab == null)
+        {
+            Debug.Log("Could not load resource: " + type.ToString());
+            prefab = defaultResource;
+        }
         elements.Add(type);
-        CreateSidedElement(type, Side.LEFT, elements.Count - 1);
-        CreateSidedElement(type, Side.RIGHT, elements.Count - 1);
+        CreateSidedElement(prefab, type, Side.LEFT, elements.Count - 1);
+        CreateSidedElement(prefab, type, Side.RIGHT, elements.Count - 1);
     }
 
-    private GameObject CreateSidedElement(ElementType type, Side side, int offset)
+    private GameObject CreateSidedElement(GameObject prefab, ElementType type, Side side, int offset)
     {
-        GameObject obj = Instantiate(newElementPrefab);
-        obj.transform.Translate(new Vector3(GetXBySide(side), 1.5f, -11f + offset * step));
+        GameObject obj = Instantiate(prefab);
+        obj.transform.Translate(new Vector3(GetXBySide(side), 1.65f, -11f + offset * step));
         Element element = obj.GetComponent<Element>();
         element.type = type;
         element.side = side;
@@ -173,9 +201,9 @@ public class Game : MonoBehaviour
             if (!elements.Contains(comb.result))
             {
                 createElement(comb.result);
-                Debug.Log("Combination created: " + comb.result.ToString());
                 UnselectLeft();
                 UnselectRight();
+                Debug.Log("Combination created: " + comb.result.ToString());
             }
             else
             {
